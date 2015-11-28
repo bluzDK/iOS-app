@@ -1,0 +1,480 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A42571D51C093B67003F8C89 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42571D41C093B67003F8C89 /* ListViewController.swift */; };
+		A42571D71C093C37003F8C89 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42571D61C093C37003F8C89 /* BLEManager.swift */; };
+		A42571D91C094331003F8C89 /* BLEDeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42571D81C094331003F8C89 /* BLEDeviceInfo.swift */; };
+		A4CA947F1C022C5900027262 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CA947E1C022C5900027262 /* AppDelegate.swift */; };
+		A4CA94821C022C5900027262 /* bluz_iOS_app.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4CA94801C022C5900027262 /* bluz_iOS_app.xcdatamodeld */; };
+		A4CA94841C022C5900027262 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CA94831C022C5900027262 /* ViewController.swift */; };
+		A4CA94871C022C5900027262 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4CA94851C022C5900027262 /* Main.storyboard */; };
+		A4CA94891C022C5900027262 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4CA94881C022C5900027262 /* Images.xcassets */; };
+		A4CA948C1C022C5900027262 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4CA948A1C022C5900027262 /* LaunchScreen.xib */; };
+		A4CA94981C022C5A00027262 /* bluz_iOS_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CA94971C022C5A00027262 /* bluz_iOS_appTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A4CA94921C022C5A00027262 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4CA94711C022C5900027262 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4CA94781C022C5900027262;
+			remoteInfo = "bluz-iOS-app";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A42571D41C093B67003F8C89 /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ListViewController.swift; path = ViewControllers/ListViewController.swift; sourceTree = "<group>"; };
+		A42571D61C093C37003F8C89 /* BLEManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BLEManager.swift; path = Libraries/BLEManager.swift; sourceTree = "<group>"; };
+		A42571D81C094331003F8C89 /* BLEDeviceInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BLEDeviceInfo.swift; path = Libraries/BLEDeviceInfo.swift; sourceTree = "<group>"; };
+		A4CA94791C022C5900027262 /* bluz-iOS-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bluz-iOS-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4CA947D1C022C5900027262 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A4CA947E1C022C5900027262 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A4CA94811C022C5900027262 /* bluz_iOS_app.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = bluz_iOS_app.xcdatamodel; sourceTree = "<group>"; };
+		A4CA94831C022C5900027262 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A4CA94861C022C5900027262 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A4CA94881C022C5900027262 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		A4CA948B1C022C5900027262 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		A4CA94911C022C5A00027262 /* bluz-iOS-appTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "bluz-iOS-appTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4CA94961C022C5A00027262 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A4CA94971C022C5A00027262 /* bluz_iOS_appTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bluz_iOS_appTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A4CA94761C022C5900027262 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4CA948E1C022C5A00027262 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A42571D21C093B15003F8C89 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				A42571D41C093B67003F8C89 /* ListViewController.swift */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		A42571D31C093B1E003F8C89 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				A42571D61C093C37003F8C89 /* BLEManager.swift */,
+				A42571D81C094331003F8C89 /* BLEDeviceInfo.swift */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		A4CA94701C022C5900027262 = {
+			isa = PBXGroup;
+			children = (
+				A4CA947B1C022C5900027262 /* bluz-iOS-app */,
+				A4CA94941C022C5A00027262 /* bluz-iOS-appTests */,
+				A4CA947A1C022C5900027262 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A4CA947A1C022C5900027262 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4CA94791C022C5900027262 /* bluz-iOS-app.app */,
+				A4CA94911C022C5A00027262 /* bluz-iOS-appTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A4CA947B1C022C5900027262 /* bluz-iOS-app */ = {
+			isa = PBXGroup;
+			children = (
+				A42571D31C093B1E003F8C89 /* Libraries */,
+				A42571D21C093B15003F8C89 /* ViewControllers */,
+				A4CA947E1C022C5900027262 /* AppDelegate.swift */,
+				A4CA94831C022C5900027262 /* ViewController.swift */,
+				A4CA94851C022C5900027262 /* Main.storyboard */,
+				A4CA94881C022C5900027262 /* Images.xcassets */,
+				A4CA948A1C022C5900027262 /* LaunchScreen.xib */,
+				A4CA94801C022C5900027262 /* bluz_iOS_app.xcdatamodeld */,
+				A4CA947C1C022C5900027262 /* Supporting Files */,
+			);
+			path = "bluz-iOS-app";
+			sourceTree = "<group>";
+		};
+		A4CA947C1C022C5900027262 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A4CA947D1C022C5900027262 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A4CA94941C022C5A00027262 /* bluz-iOS-appTests */ = {
+			isa = PBXGroup;
+			children = (
+				A4CA94971C022C5A00027262 /* bluz_iOS_appTests.swift */,
+				A4CA94951C022C5A00027262 /* Supporting Files */,
+			);
+			path = "bluz-iOS-appTests";
+			sourceTree = "<group>";
+		};
+		A4CA94951C022C5A00027262 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A4CA94961C022C5A00027262 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A4CA94781C022C5900027262 /* bluz-iOS-app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4CA949B1C022C5A00027262 /* Build configuration list for PBXNativeTarget "bluz-iOS-app" */;
+			buildPhases = (
+				A4CA94751C022C5900027262 /* Sources */,
+				A4CA94761C022C5900027262 /* Frameworks */,
+				A4CA94771C022C5900027262 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "bluz-iOS-app";
+			productName = "bluz-iOS-app";
+			productReference = A4CA94791C022C5900027262 /* bluz-iOS-app.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A4CA94901C022C5A00027262 /* bluz-iOS-appTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4CA949E1C022C5A00027262 /* Build configuration list for PBXNativeTarget "bluz-iOS-appTests" */;
+			buildPhases = (
+				A4CA948D1C022C5A00027262 /* Sources */,
+				A4CA948E1C022C5A00027262 /* Frameworks */,
+				A4CA948F1C022C5A00027262 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A4CA94931C022C5A00027262 /* PBXTargetDependency */,
+			);
+			name = "bluz-iOS-appTests";
+			productName = "bluz-iOS-appTests";
+			productReference = A4CA94911C022C5A00027262 /* bluz-iOS-appTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A4CA94711C022C5900027262 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftMigration = 0710;
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = "Eric Ely";
+				TargetAttributes = {
+					A4CA94781C022C5900027262 = {
+						CreatedOnToolsVersion = 6.4;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
+					};
+					A4CA94901C022C5A00027262 = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = A4CA94781C022C5900027262;
+					};
+				};
+			};
+			buildConfigurationList = A4CA94741C022C5900027262 /* Build configuration list for PBXProject "bluz-iOS-app" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A4CA94701C022C5900027262;
+			productRefGroup = A4CA947A1C022C5900027262 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A4CA94781C022C5900027262 /* bluz-iOS-app */,
+				A4CA94901C022C5A00027262 /* bluz-iOS-appTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A4CA94771C022C5900027262 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4CA94871C022C5900027262 /* Main.storyboard in Resources */,
+				A4CA948C1C022C5900027262 /* LaunchScreen.xib in Resources */,
+				A4CA94891C022C5900027262 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4CA948F1C022C5A00027262 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A4CA94751C022C5900027262 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4CA94841C022C5900027262 /* ViewController.swift in Sources */,
+				A4CA94821C022C5900027262 /* bluz_iOS_app.xcdatamodeld in Sources */,
+				A42571D71C093C37003F8C89 /* BLEManager.swift in Sources */,
+				A42571D91C094331003F8C89 /* BLEDeviceInfo.swift in Sources */,
+				A42571D51C093B67003F8C89 /* ListViewController.swift in Sources */,
+				A4CA947F1C022C5900027262 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4CA948D1C022C5A00027262 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4CA94981C022C5A00027262 /* bluz_iOS_appTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A4CA94931C022C5A00027262 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4CA94781C022C5900027262 /* bluz-iOS-app */;
+			targetProxy = A4CA94921C022C5A00027262 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A4CA94851C022C5900027262 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A4CA94861C022C5900027262 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A4CA948A1C022C5900027262 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A4CA948B1C022C5900027262 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A4CA94991C022C5A00027262 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A4CA949A1C022C5A00027262 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A4CA949C1C022C5A00027262 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "bluz-iOS-app/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A4CA949D1C022C5A00027262 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "bluz-iOS-app/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		A4CA949F1C022C5A00027262 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "bluz-iOS-appTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bluz-iOS-app.app/bluz-iOS-app";
+			};
+			name = Debug;
+		};
+		A4CA94A01C022C5A00027262 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "bluz-iOS-appTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bluz-iOS-app.app/bluz-iOS-app";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A4CA94741C022C5900027262 /* Build configuration list for PBXProject "bluz-iOS-app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4CA94991C022C5A00027262 /* Debug */,
+				A4CA949A1C022C5A00027262 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A4CA949B1C022C5A00027262 /* Build configuration list for PBXNativeTarget "bluz-iOS-app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4CA949C1C022C5A00027262 /* Debug */,
+				A4CA949D1C022C5A00027262 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A4CA949E1C022C5A00027262 /* Build configuration list for PBXNativeTarget "bluz-iOS-appTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4CA949F1C022C5A00027262 /* Debug */,
+				A4CA94A01C022C5A00027262 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		A4CA94801C022C5900027262 /* bluz_iOS_app.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				A4CA94811C022C5900027262 /* bluz_iOS_app.xcdatamodel */,
+			);
+			currentVersion = A4CA94811C022C5900027262 /* bluz_iOS_app.xcdatamodel */;
+			path = bluz_iOS_app.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = A4CA94711C022C5900027262 /* Project object */;
+}
