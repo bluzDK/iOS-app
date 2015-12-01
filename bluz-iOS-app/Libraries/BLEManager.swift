@@ -11,7 +11,7 @@ import CoreBluetooth
 
 public class BLEManager: NSObject, CBCentralManagerDelegate {
     private var centralManager: CBCentralManager?
-    public var peripherals = Set<BLEDeviceInfo>()
+    public var peripherals = [NSUUID: BLEDeviceInfo]()
     var eventCallback: ((BLEManagerEvent) -> (Void))?
     var startScanOnPowerup: Bool?
     
@@ -42,12 +42,25 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
         }
     }
     
+    func peripheralCount() -> Int {
+        return peripherals.count
+    }
+    
+    func peripheralAtIndex(index: Int) -> BLEDeviceInfo? {
+        let peripheralIndex = peripherals.startIndex.advancedBy(index)
+        let peripheralKey = peripherals.keys[peripheralIndex]
+        
+        return peripherals[peripheralKey]
+    }
+    
     
     //delegate methods
     public func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
-        var dIno = BLEDeviceInfo(p: peripheral, r: RSSI, a: advertisementData)
-        peripherals.insert(dIno)
-        eventCallback!(BLEManagerEvent.DeviceDiscovered)
+        if peripherals.indexForKey(peripheral.identifier) == nil {
+            let dIno = BLEDeviceInfo(p: peripheral, r: RSSI, a: advertisementData)
+            peripherals[peripheral.identifier] = dIno
+            eventCallback!(BLEManagerEvent.DeviceDiscovered)
+        }
     }
     
     public func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {

@@ -38,7 +38,7 @@ class ListViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return bleManager.peripherals.count
+        return bleManager.peripheralCount()
     }
     
     func bleManagerCallback(event: BLEManager.BLEManagerEvent) {
@@ -59,13 +59,26 @@ class ListViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
+        let cell: ListCellViewController = tableView.dequeueReusableCellWithIdentifier("BLECell", forIndexPath: indexPath) as! ListCellViewController
         
-        let peripheralIndex = bleManager.peripherals.startIndex.advancedBy(indexPath.row)
-        cell.textLabel!.text = bleManager.peripherals[peripheralIndex].peripheral!.name
-        cell.detailTextLabel!.text = bleManager.peripherals[peripheralIndex].rssi.stringValue
+        if let peripheral = bleManager.peripheralAtIndex(indexPath.row) {
+            cell.deviceName!.text = peripheral.peripheral!.name
+            cell.deviceRSSI!.text = "RSSI: " + peripheral.rssi.stringValue
+            cell.deviceServices!.text = "0 Services"
+            if let index = peripheral.advertisementData.indexForKey("CBAdvertisementDataServiceUUIDsKey") {
+                
+    //            String ServiceUUID = bleManager.peripherals[peripheralIndex].advertisementData.
+    //            
+    //            cell.detailTextLabel!.text += " --> Service UUID: " + ServiceUUID
+            }
+        }
+        
         // Configure the cell...
         return cell
+    }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 80;
     }
 
     /*
