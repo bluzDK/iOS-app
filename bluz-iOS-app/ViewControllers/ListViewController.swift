@@ -9,14 +9,18 @@
 import UIKit
 
 class ListViewController: UITableViewController {
+    @IBOutlet var scanButton: UIButton?
+    
     var bleManager: BLEManager!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        scanButton!.addTarget(self, action: "scanButtonPressed:", forControlEvents: .TouchUpInside)
+        
         bleManager = BLEManager()
         bleManager.registerCallback(bleManagerCallback)
-        bleManager.startScanning()
+        self.startScanningWithTimer()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -39,6 +43,24 @@ class ListViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return bleManager.peripheralCount()
+    }
+    
+    func startScanningWithTimer() {
+        scanButton!.setTitle("Scanning...", forState: .Normal)
+        scanButton!.enabled = false
+        bleManager.clearScanResults()
+        bleManager.startScanning()
+        let _ = NSTimer.scheduledTimerWithTimeInterval(30, target: self, selector: "stopScanning", userInfo: nil, repeats: true)
+    }
+    
+    func stopScanning() {
+        scanButton!.setTitle("Scan", forState: .Normal)
+        scanButton!.enabled = true
+        bleManager.stopScanning()
+    }
+    
+    func scanButtonPressed(sender: UIButton!) {
+        startScanningWithTimer()
     }
     
     func bleManagerCallback(event: BLEManager.BLEManagerEvent) {
@@ -64,12 +86,11 @@ class ListViewController: UITableViewController {
         if let peripheral = bleManager.peripheralAtIndex(indexPath.row) {
             cell.deviceName!.text = peripheral.peripheral!.name
             cell.deviceRSSI!.text = "RSSI: " + peripheral.rssi.stringValue
-            cell.deviceServices!.text = "0 Services"
-            if let index = peripheral.advertisementData.indexForKey("CBAdvertisementDataServiceUUIDsKey") {
-                
-    //            String ServiceUUID = bleManager.peripherals[peripheralIndex].advertisementData.
-    //            
-    //            cell.detailTextLabel!.text += " --> Service UUID: " + ServiceUUID
+            cell.deviceServices!.text = String(peripheral.numberOfServices()) + " Services"
+            if peripheral.isBluzCompatible() {
+                cell.logo?.image = UIImage(named: "bluz_hw")
+            } else {
+                cell.logo?.image = UIImage(named: "Bluetooth_Logo")
             }
         }
         

@@ -19,5 +19,26 @@ public class BLEDeviceInfo: NSObject {
         rssi = r
         advertisementData = a
     }
+    
+    func numberOfServices() -> Int {
+        if let _ = self.advertisementData.indexForKey("kCBAdvDataServiceUUIDs") {
+            let servicesCount = self.advertisementData["kCBAdvDataServiceUUIDs"]?.count
+            return servicesCount!
+        }
+        return 0
+    }
+    
+    func isBluzCompatible() -> Bool {
+        if let _ = self.advertisementData.indexForKey("kCBAdvDataServiceUUIDs") {
+            let services: NSArray = self.advertisementData["kCBAdvDataServiceUUIDs"] as! NSArray
+            for service in services {
+                NSLog("Serivce " + service.description + " for device " + (self.peripheral?.name)!)
+                if service.description == "871E0223-38FF-77B1-ED41-9FB3AA142DB2" {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 }
 

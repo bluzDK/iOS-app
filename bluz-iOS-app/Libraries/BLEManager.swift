@@ -42,6 +42,16 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
         }
     }
     
+    func stopScanning() {
+        if let _ = centralManager {
+            centralManager?.stopScan()
+        }
+    }
+    
+    func clearScanResults() {
+        peripherals.removeAll()
+    }
+    
     func peripheralCount() -> Int {
         return peripherals.count
     }
@@ -56,7 +66,12 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
     
     //delegate methods
     public func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
-        if peripherals.indexForKey(peripheral.identifier) == nil {
+        if let _ = peripherals.indexForKey(peripheral.identifier) {
+            //TO DO: update the objecta advertisiment data and RSSI
+            peripherals[peripheral.identifier]?.advertisementData = advertisementData
+            peripherals[peripheral.identifier]?.rssi = RSSI
+            eventCallback!(BLEManagerEvent.DeviceDiscovered)
+        } else {
             let dIno = BLEDeviceInfo(p: peripheral, r: RSSI, a: advertisementData)
             peripherals[peripheral.identifier] = dIno
             eventCallback!(BLEManagerEvent.DeviceDiscovered)

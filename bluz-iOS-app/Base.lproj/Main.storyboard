@@ -65,7 +65,7 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Bluz" translatesAutoresizingMaskIntoConstraints="NO" id="dBi-X9-fMm">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Bluetooth_Logo" translatesAutoresizingMaskIntoConstraints="NO" id="dBi-X9-fMm">
                                             <rect key="frame" x="20" y="-2" width="61" height="80"/>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Services" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rAQ-cT-LBW">
@@ -90,7 +90,18 @@
                             <outlet property="delegate" destination="phG-bU-lUb" id="VDJ-NW-Gdb"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Bluz" id="cEj-z7-6Ge"/>
+                    <navigationItem key="navigationItem" title="Bluz" id="cEj-z7-6Ge">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="hyj-hN-yR2">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="QjU-ER-6Lt">
+                                <rect key="frame" x="447" y="7" width="133" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Scan"/>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="scanButton" destination="QjU-ER-6Lt" id="5aW-fo-Rhj"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E4n-y0-JSA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -114,6 +125,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Bluz" width="454" height="696"/>
+        <image name="Bluetooth_Logo" width="1200" height="1200"/>
     </resources>
 </document>
