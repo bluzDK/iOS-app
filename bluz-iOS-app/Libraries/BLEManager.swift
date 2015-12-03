@@ -14,9 +14,11 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
     public var peripherals = [NSUUID: BLEDeviceInfo]()
     var eventCallback: ((BLEManagerEvent) -> (Void))?
     var startScanOnPowerup: Bool?
+    var discoverOnlyBluz: Bool?
     
     enum BLEManagerEvent {
         case DeviceDiscovered
+        case DeviceUpdated
         case DeviceConnected
         case DeviceDisconnected
         case BLERadioChange
@@ -24,6 +26,14 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
 
     override init(){
         super.init()
+        discoverOnlyBluz = false
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let val = defaults.objectForKey("discoverOnlyBluz")
+
+        if val != nil {
+            discoverOnlyBluz = val as! Bool
+        }
         startScanOnPowerup = false
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -70,11 +80,16 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
             //TO DO: update the objecta advertisiment data and RSSI
             peripherals[peripheral.identifier]?.advertisementData = advertisementData
             peripherals[peripheral.identifier]?.rssi = RSSI
-            eventCallback!(BLEManagerEvent.DeviceDiscovered)
+            eventCallback!(BLEManagerEvent.DeviceUpdated)
         } else {
             let dIno = BLEDeviceInfo(p: peripheral, r: RSSI, a: advertisementData)
-            peripherals[peripheral.identifier] = dIno
-            eventCallback!(BLEManagerEvent.DeviceDiscovered)
+            if self.discoverOnlyBluz == true && dIno.isBluzCompatible() {
+                peripherals[peripheral.identifier] = dIno
+                eventCallback!(BLEManagerEvent.DeviceDiscovered)
+            } else if self.discoverOnlyBluz == false {
+                peripherals[peripheral.identifier] = dIno
+                eventCallback!(BLEManagerEvent.DeviceDiscovered)
+            }
         }
     }
     

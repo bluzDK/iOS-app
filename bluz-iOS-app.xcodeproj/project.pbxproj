@@ -12,6 +12,7 @@
 		A42571D91C094331003F8C89 /* BLEDeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42571D81C094331003F8C89 /* BLEDeviceInfo.swift */; };
 		A494F6F51C0E532E0045B25D /* ListCellViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A494F6F41C0E532E0045B25D /* ListCellViewController.swift */; };
 		A494F6F71C0E7C730045B25D /* ParticleSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A494F6F61C0E7C730045B25D /* ParticleSocket.swift */; };
+		A494F6FB1C0FA98C0045B25D /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A494F6FA1C0FA98C0045B25D /* Settings.bundle */; };
 		A4CA947F1C022C5900027262 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CA947E1C022C5900027262 /* AppDelegate.swift */; };
 		A4CA94821C022C5900027262 /* bluz_iOS_app.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4CA94801C022C5900027262 /* bluz_iOS_app.xcdatamodeld */; };
 		A4CA94841C022C5900027262 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CA94831C022C5900027262 /* ViewController.swift */; };
@@ -37,6 +38,7 @@
 		A42571D81C094331003F8C89 /* BLEDeviceInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BLEDeviceInfo.swift; path = Libraries/BLEDeviceInfo.swift; sourceTree = "<group>"; };
 		A494F6F41C0E532E0045B25D /* ListCellViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ListCellViewController.swift; path = ViewControllers/ListCellViewController.swift; sourceTree = "<group>"; };
 		A494F6F61C0E7C730045B25D /* ParticleSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ParticleSocket.swift; path = Libraries/ParticleSocket.swift; sourceTree = "<group>"; };
+		A494F6FA1C0FA98C0045B25D /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = "bluz-iOS-app/Settings.bundle"; sourceTree = "<group>"; };
 		A4CA94791C022C5900027262 /* bluz-iOS-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bluz-iOS-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4CA947D1C022C5900027262 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A4CA947E1C022C5900027262 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 		A4CA94701C022C5900027262 = {
 			isa = PBXGroup;
 			children = (
+				A494F6FA1C0FA98C0045B25D /* Settings.bundle */,
 				A4CA947B1C022C5900027262 /* bluz-iOS-app */,
 				A4CA94941C022C5A00027262 /* bluz-iOS-appTests */,
 				A4CA947A1C022C5900027262 /* Products */,
@@ -233,6 +236,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A494F6FB1C0FA98C0045B25D /* Settings.bundle in Resources */,
 				A4CA94871C022C5900027262 /* Main.storyboard in Resources */,
 				A4CA948C1C022C5900027262 /* LaunchScreen.xib in Resources */,
 				A4CA94891C022C5900027262 /* Images.xcassets in Resources */,

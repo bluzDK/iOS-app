@@ -63,9 +63,15 @@ class ListViewController: UITableViewController {
         startScanningWithTimer()
     }
     
+    func connectButtonPressed(sender: UIButton!) {
+        let peripheral = bleManager.peripheralAtIndex(sender.tag)
+    }
+    
     func bleManagerCallback(event: BLEManager.BLEManagerEvent) {
         switch (event)
         {
+            case BLEManager.BLEManagerEvent.DeviceUpdated:
+                fallthrough
             case BLEManager.BLEManagerEvent.DeviceDiscovered:
                 self.tableView.reloadData()
                 break;
@@ -89,8 +95,13 @@ class ListViewController: UITableViewController {
             cell.deviceServices!.text = String(peripheral.numberOfServices()) + " Services"
             if peripheral.isBluzCompatible() {
                 cell.logo?.image = UIImage(named: "bluz_hw")
+                cell.connectButton!.hidden = false
+                
+                cell.connectButton!.tag = indexPath.row
+                cell.connectButton!.addTarget(self, action: "connectButtonPressed:", forControlEvents: .TouchUpInside)
             } else {
                 cell.logo?.image = UIImage(named: "Bluetooth_Logo")
+                cell.connectButton!.hidden = true
             }
         }
         
