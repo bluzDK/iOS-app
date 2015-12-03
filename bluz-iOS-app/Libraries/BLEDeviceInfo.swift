@@ -13,11 +13,13 @@ public class BLEDeviceInfo: NSObject {
     public var peripheral: CBPeripheral?
     public var rssi: NSNumber = 0
     public var advertisementData: [String : AnyObject]
+    public var connected: Bool
     
     init(p: CBPeripheral, r: NSNumber, a: [String : AnyObject]){
         peripheral = p
         rssi = r
         advertisementData = a
+        connected = false
     }
     
     func numberOfServices() -> Int {
@@ -33,7 +35,7 @@ public class BLEDeviceInfo: NSObject {
             let services: NSArray = self.advertisementData["kCBAdvDataServiceUUIDs"] as! NSArray
             for service in services {
                 NSLog("Serivce " + service.description + " for device " + (self.peripheral?.name)!)
-                if service.description == "871E0223-38FF-77B1-ED41-9FB3AA142DB2" {
+                if service.description == BLUZ_UUID {
                     return true
                 }
             }

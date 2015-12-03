@@ -64,10 +64,16 @@ class ListViewController: UITableViewController {
     }
     
     func connectButtonPressed(sender: UIButton!) {
-        let peripheral = bleManager.peripheralAtIndex(sender.tag)
+        if let peripheral = bleManager.peripheralAtIndex(sender.tag) {
+            bleManager.connectPeripheral(peripheral)
+            sender.enabled = false;
+            sender.setTitle("Connecting...", forState: .Normal)
+            
+            
+        }
     }
     
-    func bleManagerCallback(event: BLEManager.BLEManagerEvent) {
+    func bleManagerCallback(event: BLEManager.BLEManagerEvent, peripheral: BLEDeviceInfo) {
         switch (event)
         {
             case BLEManager.BLEManagerEvent.DeviceUpdated:
@@ -76,6 +82,13 @@ class ListViewController: UITableViewController {
                 self.tableView.reloadData()
                 break;
             case BLEManager.BLEManagerEvent.DeviceConnected:
+                let row = bleManager.indexOfPeripheral(peripheral)
+                let indexPath = NSIndexPath(forRow: row!, inSection:0)
+                self.tableView.cellForRowAtIndexPath(indexPath)
+                if let cell: ListCellViewController = self.tableView.cellForRowAtIndexPath(indexPath) as! ListCellViewController {
+                    cell.connectButton!.enabled = true
+                    cell.connectButton!.setTitle("Disconnect", forState: .Normal)
+                }
                 break;
             case BLEManager.BLEManagerEvent.DeviceDisconnected:
                 break;

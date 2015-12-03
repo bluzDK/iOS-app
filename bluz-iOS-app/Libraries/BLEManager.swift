@@ -9,10 +9,15 @@
 import Foundation
 import CoreBluetooth
 
+let BLUZ_UUID = "871E0223-38FF-77B1-ED41-9FB3AA142DB2"
+let BLUZ_SERVICE_UUID = "0223"
+let BLUZ_CHAR_RX_UUID = "0224"
+let BLUZ_CHAR_TX_UUID = "0225"
+
 public class BLEManager: NSObject, CBCentralManagerDelegate {
     private var centralManager: CBCentralManager?
     public var peripherals = [NSUUID: BLEDeviceInfo]()
-    var eventCallback: ((BLEManagerEvent) -> (Void))?
+    var eventCallback: ((BLEManagerEvent, BLEDeviceInfo) -> (Void))?
     var startScanOnPowerup: Bool?
     var discoverOnlyBluz: Bool?
     
@@ -38,7 +43,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
-    func registerCallback(callback: (result: BLEManagerEvent) -> Void) {
+    func registerCallback(callback: (result: BLEManagerEvent, peripheral: BLEDeviceInfo) -> Void) {
         eventCallback = callback
     }
     
@@ -73,6 +78,22 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
         return peripherals[peripheralKey]
     }
     
+    func indexOfPeripheral(peripheral: BLEDeviceInfo) -> Int? {
+        if let index = peripherals.keys.indexOf((peripheral.peripheral?.identifier)!) {
+            return peripherals.count - index.distanceTo(peripherals.endIndex)
+        }
+        return nil
+    }
+    
+    //peripheral commands
+    func connectPeripheral(peripheral: BLEDeviceInfo) {
+        centralManager!.connectPeripheral(peripheral.peripheral!, options: nil)
+    }
+    
+    func disconnectPeripheral(peripheral: BLEDeviceInfo) {
+        centralManager!.cancelPeripheralConnection(peripheral.peripheral!)
+    }
+    
     
     //delegate methods
     public func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
@@ -80,26 +101,35 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
             //TO DO: update the objecta advertisiment data and RSSI
             peripherals[peripheral.identifier]?.advertisementData = advertisementData
             peripherals[peripheral.identifier]?.rssi = RSSI
-            eventCallback!(BLEManagerEvent.DeviceUpdated)
+            eventCallback!(BLEManagerEvent.DeviceUpdated, peripherals[peripheral.identifier]!)
         } else {
             let dIno = BLEDeviceInfo(p: peripheral, r: RSSI, a: advertisementData)
             if self.discoverOnlyBluz == true && dIno.isBluzCompatible() {
                 peripherals[peripheral.identifier] = dIno
-                eventCallback!(BLEManagerEvent.DeviceDiscovered)
+                eventCallback!(BLEManagerEvent.DeviceDiscovered, dIno)
             } else if self.discoverOnlyBluz == false {
                 peripherals[peripheral.identifier] = dIno
-                eventCallback!(BLEManagerEvent.DeviceDiscovered)
+                eventCallback!(BLEManagerEvent.DeviceDiscovered, dIno)
             }
         }
     }
     
     public func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         print("peripheral connected")
+        if let _ = peripherals.indexForKey(peripheral.identifier) {
+            peripherals[peripheral.identifier]?.connected = true;
+            eventCallback!(BLEManagerEvent.DeviceConnected, peripherals[peripheral.identifier]!)
+//            peripherals[peripheral.identifier]?.peripheral?.discoverServices([CBUUID(string: BLUZ_UUID)])
+        }
     }
     
     
     public func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
-        
+        print("peripheral disconnected")
+        if let _ = peripherals.indexForKey(peripheral.identifier) {
+            peripherals[peripheral.identifier]?.connected = false;
+            eventCallback!(BLEManagerEvent.DeviceDisconnected, peripherals[peripheral.identifier]!)
+        }
     }
     
     public func centralManagerDidUpdateState(central: CBCentralManager) {
@@ -134,6 +164,10 @@ public class BLEManager: NSObject, CBCentralManagerDelegate {
                 break
         }
     }
-
+    
+    
+    public func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
+        
+    }
 
 }
