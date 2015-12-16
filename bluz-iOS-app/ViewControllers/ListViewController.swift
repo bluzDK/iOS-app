@@ -65,11 +65,15 @@ class ListViewController: UITableViewController {
     
     func connectButtonPressed(sender: UIButton!) {
         if let peripheral = bleManager.peripheralAtIndex(sender.tag) {
-            bleManager.connectPeripheral(peripheral)
-            sender.enabled = false;
-            sender.setTitle("Connecting...", forState: .Normal)
-            
-            
+            if (peripheral.state == BLEDeviceState.Connected) {
+                bleManager.disconnectPeripheral(peripheral)
+                sender.enabled = false;
+                sender.setTitle("Disconnecting...", forState: .Normal)
+            } else {
+                bleManager.connectPeripheral(peripheral)
+                sender.enabled = false;
+                sender.setTitle("Connecting...", forState: .Normal)
+            }
         }
     }
     
@@ -88,13 +92,18 @@ class ListViewController: UITableViewController {
                 if let cell: ListCellViewController = self.tableView.cellForRowAtIndexPath(indexPath) as! ListCellViewController {
                     cell.connectButton!.enabled = true
                     cell.connectButton!.setTitle("Disconnect", forState: .Normal)
+//                    cell.connectButton!.backgroundColor = UIColor(red: 209, green: 54, blue: 0, alpha: 1)
                 }
                 break;
             case BLEManager.BLEManagerEvent.DeviceDisconnected:
+                let row = bleManager.indexOfPeripheral(peripheral)
+                let indexPath = NSIndexPath(forRow: row!, inSection:0)
+                if let cell: ListCellViewController = self.tableView.cellForRowAtIndexPath(indexPath) as! ListCellViewController {
+                    cell.connectButton!.setTitle("Connect", forState: .Normal)
+//                    cell.connectButton!.backgroundColor = UIColor(red: 45, green: 145, blue: 93, alpha: 1)
+                }
                 break;
             case BLEManager.BLEManagerEvent.BLERadioChange:
-                break;
-            default:
                 break;
         }
     }
@@ -103,15 +112,26 @@ class ListViewController: UITableViewController {
         let cell: ListCellViewController = tableView.dequeueReusableCellWithIdentifier("BLECell", forIndexPath: indexPath) as! ListCellViewController
         
         if let peripheral = bleManager.peripheralAtIndex(indexPath.row) {
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
             cell.deviceName!.text = peripheral.peripheral!.name
             cell.deviceRSSI!.text = "RSSI: " + peripheral.rssi.stringValue
             cell.deviceServices!.text = String(peripheral.numberOfServices()) + " Services"
+            
             if peripheral.isBluzCompatible() {
                 cell.logo?.image = UIImage(named: "bluz_hw")
                 cell.connectButton!.hidden = false
                 
                 cell.connectButton!.tag = indexPath.row
                 cell.connectButton!.addTarget(self, action: "connectButtonPressed:", forControlEvents: .TouchUpInside)
+                
+                if (peripheral.state == BLEDeviceState.Connected) {
+                    cell.connectButton!.setTitle("Disconnect", forState: .Normal)
+//                    cell.connectButton!.backgroundColor = UIColor(red: 209, green: 54, blue: 0, alpha: 1)
+                } else {
+                    cell.connectButton!.setTitle("Connect", forState: .Normal)
+//                    cell.connectButton!.backgroundColor = UIColor(red: 45, green: 145, blue: 93, alpha: 1)
+                }
+                
             } else {
                 cell.logo?.image = UIImage(named: "Bluetooth_Logo")
                 cell.connectButton!.hidden = true

@@ -15,6 +15,12 @@ public class ParticleSocket: NSObject, NSStreamDelegate {
     private var inputStream: NSInputStream!
     private var outputStream: NSOutputStream!
     
+    var dataCallback: ((NSData, Int) -> (Void))?
+    
+    func registerCallback(callback: (data: NSData, length: Int) -> Void) {
+        dataCallback = callback
+    }
+    
     public func connect() {
         var readStream : Unmanaged<CFReadStream>?
         var writeStream : Unmanaged<CFWriteStream>?
@@ -38,7 +44,8 @@ public class ParticleSocket: NSObject, NSStreamDelegate {
         outputStream!.close()
     }
     
-    public func write(data: [UInt8], len: Int) {
+    public func write(data: UnsafePointer<UInt8>, len: Int) {
+        NSLog("Sending data of size " + String(len) + " to Particle")
         outputStream.write(data, maxLength: len)
     }
     
@@ -59,12 +66,12 @@ public class ParticleSocket: NSObject, NSStreamDelegate {
             if ( aStream == inputStream){
                 
                 while (inputStream.hasBytesAvailable){
-                    var len = inputStream.read(&buffer, maxLength: buffer.count)
-                    if(len > 0){
-                        var output = NSString(bytes: &buffer, length: buffer.count, encoding: NSUTF8StringEncoding)
-                        if (output != ""){
-                            NSLog("server said: %@", output!)
-                        }
+                    let len = inputStream.read(&buffer+2, maxLength: buffer.count)
+                    buffer[0] = 0x01;
+                    buffer[1] = 0x00;
+                    
+                    if(len > 0) {
+                        dataCallback!( NSData(bytes: buffer, length: len+2), len+2)
                     }
                 }
             }
