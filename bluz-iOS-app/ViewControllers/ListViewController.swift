@@ -21,6 +21,8 @@ class ListViewController: UITableViewController {
         bleManager = BLEManager()
         bleManager.registerCallback(bleManagerCallback)
         self.startScanningWithTimer()
+        
+        UIApplication.sharedApplication().idleTimerDisabled = true
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
