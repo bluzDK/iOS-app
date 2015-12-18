@@ -10,6 +10,7 @@ import UIKit
 
 class ListViewController: UITableViewController {
     @IBOutlet var scanButton: UIButton?
+    @IBOutlet var loginButton: UIButton?
     
     var bleManager: BLEManager!
 
@@ -17,6 +18,7 @@ class ListViewController: UITableViewController {
         super.viewDidLoad()
         
         scanButton!.addTarget(self, action: "scanButtonPressed:", forControlEvents: .TouchUpInside)
+        loginButton!.addTarget(self, action: "loginButtonPressed:", forControlEvents: .TouchUpInside)
         
         bleManager = BLEManager()
         bleManager.registerCallback(bleManagerCallback)
@@ -28,6 +30,14 @@ class ListViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if SparkCloud.sharedInstance().isLoggedIn {
+            loginButton!.setTitle("Logout", forState: .Normal)
+        } else {
+            loginButton!.setTitle("Login", forState: .Normal)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,7 +62,7 @@ class ListViewController: UITableViewController {
         scanButton!.enabled = false
         bleManager.clearScanResults()
         bleManager.startScanning()
-        let _ = NSTimer.scheduledTimerWithTimeInterval(30, target: self, selector: "stopScanning", userInfo: nil, repeats: true)
+        let _ = NSTimer.scheduledTimerWithTimeInterval(30, target: self, selector: "stopScanning", userInfo: nil, repeats: false)
     }
     
     func stopScanning() {
@@ -63,6 +73,15 @@ class ListViewController: UITableViewController {
     
     func scanButtonPressed(sender: UIButton!) {
         startScanningWithTimer()
+    }
+    
+    func loginButtonPressed(sender: UIButton!) {
+        if SparkCloud.sharedInstance().isLoggedIn {
+            SparkCloud.sharedInstance().logout()
+            loginButton!.setTitle("Login", forState: .Normal)
+        } else {
+            performSegueWithIdentifier("showLoginSegue", sender: nil)
+        }
     }
     
     func connectButtonPressed(sender: UIButton!) {
@@ -76,6 +95,23 @@ class ListViewController: UITableViewController {
                 sender.enabled = false;
                 sender.setTitle("Connecting...", forState: .Normal)
             }
+        }
+    }
+    
+    func claimButtonPressed(sender: UIButton!) {
+        sender.enabled = false
+        if let peripheral = bleManager.peripheralAtIndex(sender.tag) {
+            SparkCloud.sharedInstance().claimDevice(peripheral.cloudId as String, completion: { (error:NSError!) -> Void in
+                if let _ = error {
+                    NSLog("Unable to claim device")
+                    NSLog("Error: " + error.debugDescription)
+                }
+                else {
+                    sender.hidden = true
+                    NSLog("Claimed")
+                    peripheral.isClaimed = true
+                }
+            })
         }
     }
     
@@ -102,6 +138,7 @@ class ListViewController: UITableViewController {
                 let indexPath = NSIndexPath(forRow: row!, inSection:0)
                 if let cell: ListCellViewController = self.tableView.cellForRowAtIndexPath(indexPath) as! ListCellViewController {
                     cell.connectButton!.setTitle("Connect", forState: .Normal)
+                    cell.connectButton!.enabled = true
 //                    cell.connectButton!.backgroundColor = UIColor(red: 45, green: 145, blue: 93, alpha: 1)
                 }
                 break;
@@ -114,14 +151,21 @@ class ListViewController: UITableViewController {
         let cell: ListCellViewController = tableView.dequeueReusableCellWithIdentifier("BLECell", forIndexPath: indexPath) as! ListCellViewController
         
         if let peripheral = bleManager.peripheralAtIndex(indexPath.row) {
+            cell.claimButton!.enabled = false
+            cell.claimButton!.hidden = true
+            
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             cell.deviceName!.text = peripheral.peripheral!.name
             cell.deviceRSSI!.text = "RSSI: " + peripheral.rssi.stringValue
             cell.deviceServices!.text = String(peripheral.numberOfServices()) + " Services"
             
+            cell.cloudId!.text = peripheral.cloudId as String
+            cell.cloudName!.text = peripheral.cloudName as String
+            
             if peripheral.isBluzCompatible() {
                 cell.logo?.image = UIImage(named: "bluz_hw")
                 cell.connectButton!.hidden = false
+                cell.connectButton!.enabled = true
                 
                 cell.connectButton!.tag = indexPath.row
                 cell.connectButton!.addTarget(self, action: "connectButtonPressed:", forControlEvents: .TouchUpInside)
@@ -129,6 +173,14 @@ class ListViewController: UITableViewController {
                 if (peripheral.state == BLEDeviceState.Connected) {
                     cell.connectButton!.setTitle("Disconnect", forState: .Normal)
 //                    cell.connectButton!.backgroundColor = UIColor(red: 209, green: 54, blue: 0, alpha: 1)
+                    
+                    if peripheral.cloudId != "" && !peripheral.isClaimed {
+                        cell.claimButton!.tag = indexPath.row
+                        cell.claimButton!.enabled = true
+                        cell.claimButton!.hidden = false
+                        cell.claimButton!.addTarget(self, action: "claimButtonPressed:", forControlEvents: .TouchUpInside)
+                    }
+                    
                 } else {
                     cell.connectButton!.setTitle("Connect", forState: .Normal)
 //                    cell.connectButton!.backgroundColor = UIColor(red: 45, green: 145, blue: 93, alpha: 1)
@@ -137,6 +189,7 @@ class ListViewController: UITableViewController {
             } else {
                 cell.logo?.image = UIImage(named: "Bluetooth_Logo")
                 cell.connectButton!.hidden = true
+                cell.connectButton!.enabled = false
             }
         }
         
@@ -145,7 +198,7 @@ class ListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 80;
+        return 120;
     }
 
     /*

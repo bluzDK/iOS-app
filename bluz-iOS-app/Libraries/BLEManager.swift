@@ -19,6 +19,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var eventCallback: ((BLEManagerEvent, BLEDeviceInfo) -> (Void))?
     var startScanOnPowerup: Bool?
     var discoverOnlyBluz: Bool?
+    var lastService: UInt8
     
     enum BLEManagerEvent {
         case DeviceDiscovered
@@ -29,6 +30,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
 
     override init(){
+        lastService = 0
         super.init()
         discoverOnlyBluz = false
         
@@ -121,6 +123,11 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
     }
     
+    func requestId(timer: NSTimer) {
+        let peripheral = timer.userInfo as! BLEDeviceInfo
+        peripheral.requestParticleId()
+    }
+    
     public func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         print("peripheral connected")
         if let _ = peripherals.indexForKey(peripheral.identifier) {
@@ -128,6 +135,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             eventCallback!(BLEManagerEvent.DeviceConnected, peripherals[peripheral.identifier]!)
             peripherals[peripheral.identifier]?.peripheral?.delegate = self;
             peripherals[peripheral.identifier]?.peripheral?.discoverServices([CBUUID(string: BLUZ_UUID)])
+            let _ = NSTimer.scheduledTimerWithTimeInterval(22, target: self, selector: "requestId:", userInfo: peripherals[peripheral.identifier], repeats: false)
         }
     }
     
@@ -136,6 +144,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         print("peripheral disconnected")
         if let _ = peripherals.indexForKey(peripheral.identifier) {
             peripherals[peripheral.identifier]?.state = BLEDeviceState.Disconnected
+            peripherals[peripheral.identifier]?.socket?.disconnect()
             eventCallback!(BLEManagerEvent.DeviceDisconnected, peripherals[peripheral.identifier]!)
         }
     }
@@ -218,16 +227,59 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 peripheral!.state = BLEDeviceState.Connected
             } else if peripheral!.state == BLEDeviceState.Connected {
                 if (characteristic.value!.length == 2 && characteristic.value!.isEqualToData(eosBuffer)) {
-                    peripheral?.socket?.write( UnsafePointer<UInt8>((peripheral?.rxBuffer.bytes)!), len: (peripheral?.rxBuffer.length)!)
+                    if lastService == 0x01 {
+                        peripheral?.socket?.write( UnsafePointer<UInt8>((peripheral?.rxBuffer.bytes)!), len: (peripheral?.rxBuffer.length)!)
+                    } else if lastService == 2 {
+                        let length = peripheral?.rxBuffer.length
+                        var deviceId = "" as NSMutableString
+
+                        var byteArray = [UInt8](count: length!, repeatedValue: 0x0)
+                        peripheral?.rxBuffer.getBytes(&byteArray, length:length!)
+                        
+                        for byte in byteArray {
+                            deviceId.appendFormat("%02x", byte)
+                        }
+                        
+                        peripheral?.cloudId = deviceId
+                        getCloudName(peripheral!)
+                    }
                     peripheral?.rxBuffer.length = 0
                 } else {
                     if peripheral?.rxBuffer.length == 0 {
-                        peripheral?.rxBuffer.appendData(characteristic.value!.subdataWithRange(NSMakeRange(2, characteristic.value!.length-2)))
+                        var array = [UInt8](count: (characteristic.value?.length)!, repeatedValue: 0)
+                        characteristic.value!.getBytes(&array, length: (characteristic.value?.length)!)
+                        lastService = array.first!
+                        
+                        var headerBytes = 1
+                        if lastService == 1 {
+                            headerBytes = 2
+                        }
+                        peripheral?.rxBuffer.appendData(characteristic.value!.subdataWithRange(NSMakeRange(headerBytes, characteristic.value!.length-headerBytes)))
                     } else {
                         peripheral?.rxBuffer.appendData(characteristic.value!)
                     }
                 }
             }
+        }
+    }
+    
+    public func getCloudName(peripheral: BLEDeviceInfo) {
+        SparkCloud.sharedInstance().getDevices { (sparkDevices:[AnyObject]!, error:NSError!) -> Void in
+            if let e = error {
+                NSLog("Check your internet connectivity")
+            }
+            else {
+                if let devices = sparkDevices as? [SparkDevice] {
+                    for device in devices {
+                        if device.id == peripheral.cloudId {
+                            peripheral.cloudName = device.name
+                            peripheral.particleDevice = device
+                            peripheral.isClaimed = true
+                        }
+                    }
+                }
+            }
+            self.eventCallback!(BLEManagerEvent.DeviceUpdated, peripheral)
         }
     }
 }
