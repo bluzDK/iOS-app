@@ -145,6 +145,8 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if let _ = peripherals.indexForKey(peripheral.identifier) {
             peripherals[peripheral.identifier]?.state = BLEDeviceState.Disconnected
             peripherals[peripheral.identifier]?.socket?.disconnect()
+            peripherals[peripheral.identifier]?.lastByteCount = 0
+            peripherals[peripheral.identifier]?.rxBuffer.length = 0
             eventCallback!(BLEManagerEvent.DeviceDisconnected, peripherals[peripheral.identifier]!)
         }
     }
@@ -216,12 +218,27 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
 
     public func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
+        if characteristic.UUID != CBUUID(string: BLUZ_CHAR_RX_UUID) {
+            return
+        }
+        
         if let _ = peripherals.indexForKey(peripheral.identifier) {
             let peripheral = peripherals[peripheral.identifier]
             let eosBuffer = NSData(bytes: [0x03, 0x04] as [UInt8], length: 2)
             
             NSLog("Got data from bluz of size " + String(characteristic.value!.length))
-            if peripheral!.state == BLEDeviceState.CloudConnecting && characteristic.value!.isEqualToData(eosBuffer) {
+            if peripheral!.state == BLEDeviceState.CloudConnecting && characteristic.value!.isEqualToData(eosBuffer) && peripheral?.lastByteCount > 0 {
+               
+                var bytes = "" as NSMutableString
+                let length = characteristic.value!.length
+                var byteArray = [UInt8](count: length, repeatedValue: 0x0)
+                characteristic.value!.getBytes(&byteArray, length:length)
+                
+                for byte in byteArray {
+                    bytes.appendFormat("%02x ", byte)
+                }
+                NSLog("As we connect, bluz data is: " + String(bytes))
+                
                 peripheral?.socket?.connect()
                 peripheral?.rxBuffer.length = 0
                 peripheral!.state = BLEDeviceState.Connected
@@ -259,6 +276,20 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         peripheral?.rxBuffer.appendData(characteristic.value!)
                     }
                 }
+            } else {
+                //this is to catch issues when reconnecting
+                //with beacons, for some reason we are seeing the eos characters sent immediately upon connection, not sure why yet
+                peripheral?.lastByteCount = characteristic.value!.length
+
+                var bytes = "" as NSMutableString
+                let length = characteristic.value!.length
+                var byteArray = [UInt8](count: length, repeatedValue: 0x0)
+                characteristic.value!.getBytes(&byteArray, length:length)
+                
+                for byte in byteArray {
+                    bytes.appendFormat("%02x ", byte)
+                }
+                NSLog("Bluz data is: " + String(bytes))
             }
         }
     }

@@ -28,6 +28,7 @@ public class BLEDeviceInfo: NSObject {
     public var cloudId: NSString
     public var particleDevice: SparkDevice?
     public var isClaimed: Bool
+    public var lastByteCount: Int
     
     public var writeCharacteristic: CBCharacteristic?
     
@@ -42,6 +43,7 @@ public class BLEDeviceInfo: NSObject {
         rxBuffer = NSMutableData()
         cloudName = ""
         cloudId = ""
+        lastByteCount = 0
         super.init()
         
         self.socket!.registerCallback(particleSocketCallback)
@@ -71,6 +73,8 @@ public class BLEDeviceInfo: NSObject {
     func requestParticleId() {
         let nameBuffer = [0x02, 0x00] as [UInt8]
         sendParticleData(NSData(bytes: nameBuffer, length: nameBuffer.count), length: nameBuffer.count)
+        let eosBuffer = [0x03, 0x04] as [UInt8]
+        sendParticleData(NSData(bytes: eosBuffer, length: eosBuffer.count), length: eosBuffer.count)
     }
     
     func particleSocketCallback(data: NSData, length: Int) {
