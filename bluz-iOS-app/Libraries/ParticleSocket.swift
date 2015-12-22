@@ -15,9 +15,9 @@ public class ParticleSocket: NSObject, NSStreamDelegate {
     private var inputStream: NSInputStream!
     private var outputStream: NSOutputStream!
     
-    var dataCallback: ((NSData, Int) -> (Void))?
+    var dataCallback: ((NSData, NSData) -> (Void))?
     
-    func registerCallback(callback: (data: NSData, length: Int) -> Void) {
+    func registerCallback(callback: (data: NSData, length: NSData) -> Void) {
         dataCallback = callback
     }
     
@@ -62,16 +62,18 @@ public class ParticleSocket: NSObject, NSStreamDelegate {
             break
         case NSStreamEvent.HasBytesAvailable:
             NSLog("HasBytesAvaible")
-            var buffer = [UInt8](count: 4096, repeatedValue: 0)
+            var buffer = [UInt8](count: 200000, repeatedValue: 0)
             if ( aStream == inputStream){
                 
                 while (inputStream.hasBytesAvailable){
-                    let len = inputStream.read(&buffer+2, maxLength: buffer.count)
-                    buffer[0] = 0x01;
-                    buffer[1] = 0x00;
+                    let len = inputStream.read(&buffer, maxLength: buffer.count)
+                    
+                    var header = [UInt8](count: 2, repeatedValue: 0x00)
+                    header[0] = 0x01
+                    header[1] = 0x00
                     
                     if(len > 0) {
-                        dataCallback!( NSData(bytes: buffer, length: len+2), len+2)
+                        dataCallback!( NSData(bytes: buffer, length: len), NSData(bytes: header, length: header.count))
                     }
                 }
             }

@@ -215,6 +215,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if error != nil {
             NSLog(error.debugDescription)
         }
+        NSLog("Finished writing value")
     }
 
     public func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {

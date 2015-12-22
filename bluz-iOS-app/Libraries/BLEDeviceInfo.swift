@@ -72,25 +72,51 @@ public class BLEDeviceInfo: NSObject {
     
     func requestParticleId() {
         let nameBuffer = [0x02, 0x00] as [UInt8]
-        sendParticleData(NSData(bytes: nameBuffer, length: nameBuffer.count), length: nameBuffer.count)
-        let eosBuffer = [0x03, 0x04] as [UInt8]
-        sendParticleData(NSData(bytes: eosBuffer, length: eosBuffer.count), length: eosBuffer.count)
+        sendParticleData(NSData(bytes: nameBuffer, length: nameBuffer.count), header: nil)
     }
     
-    func particleSocketCallback(data: NSData, length: Int) {
-        sendParticleData(data, length: length)
-        let eosBuffer = [0x03, 0x04] as [UInt8]
-        sendParticleData(NSData(bytes: eosBuffer, length: eosBuffer.count), length: eosBuffer.count)
+    func particleSocketCallback(data: NSData, header: NSData) {
+        sendParticleData(data, header: header)
     }
     
-    func sendParticleData(data: NSData, length: Int) {
-        for var i = 0; i < length; i+=20 {
-            let size = (length-i > 20 ? 20 : length-i)
+    func sendParticleData(data: NSData, header: NSData?) {
+
+        let maxChunk = 960
+        
+        var writeType = CBCharacteristicWriteType.WithResponse
+        if let prop = writeCharacteristic?.properties {
+            if prop.contains(CBCharacteristicProperties.WriteWithoutResponse) {
+                NSLog("Can write without response")
+                writeType = CBCharacteristicWriteType.WithoutResponse
+            }
+        }
+        
+        for var chunkPointer = 0; chunkPointer < data.length; chunkPointer += maxChunk {
+            var chunkLength = (data.length-chunkPointer > maxChunk ? maxChunk : data.length-chunkPointer)
             
-            let dataSlice = data.subdataWithRange(NSMakeRange(i, size))
+            var chunk = NSMutableData()
+            if let _ = header {
+                chunk = NSMutableData(data: header!)
+                chunk.appendData(data.subdataWithRange(NSMakeRange(chunkPointer, chunkLength)))
+                chunkLength += (header?.length)!
+            } else {
+                chunk = NSMutableData(data: data.subdataWithRange(NSMakeRange(chunkPointer, chunkLength)))
+            }
             
-            NSLog("Sneding data of size " + String(dataSlice.length) + " to bluz")
-            peripheral?.writeValue(dataSlice, forCharacteristic: writeCharacteristic!, type: CBCharacteristicWriteType.WithResponse)
+            for var i = 0; i < chunkLength; i+=20 {
+                let size = (chunkLength-i > 20 ? 20 : chunkLength-i)
+                
+                let dataSlice = chunk.subdataWithRange(NSMakeRange(i, size))
+                
+                peripheral?.writeValue(dataSlice, forCharacteristic: writeCharacteristic!, type: writeType)
+                NSLog("Sent data of size " + String(dataSlice.length) + " to bluz")
+            }
+            
+            let eosBuffer = [0x03, 0x04] as [UInt8]
+            let eos = NSData(bytes: eosBuffer, length: eosBuffer.count)
+            peripheral?.writeValue(eos, forCharacteristic: writeCharacteristic!, type: writeType)
+            NSLog("Sent eos to bluz")
+            
         }
     }
 }
