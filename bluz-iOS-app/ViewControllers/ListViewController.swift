@@ -11,8 +11,13 @@ import UIKit
 class ListViewController: UITableViewController {
     @IBOutlet var scanButton: UIButton?
     @IBOutlet var loginButton: UIButton?
+    @IBOutlet var navBar: UINavigationItem?
     
     var bleManager: BLEManager!
+    var scanTimer: NSTimer!
+    
+    var numberOfDots = 1;
+    var scanning = false;
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +27,7 @@ class ListViewController: UITableViewController {
         
         bleManager = BLEManager()
         bleManager.registerCallback(bleManagerCallback)
-        self.startScanningWithTimer()
+        self.startScanning()
         
         UIApplication.sharedApplication().idleTimerDisabled = true
         // Uncomment the following line to preserve selection between presentations
@@ -57,22 +62,40 @@ class ListViewController: UITableViewController {
         return bleManager.peripheralCount()
     }
     
-    func startScanningWithTimer() {
+    func startScanning() {
+        scanning = true
         scanButton!.setTitle("Scanning...", forState: .Normal)
         scanButton!.enabled = false
         bleManager.clearScanResults()
-        bleManager.startScanning()
+        self.tableView.reloadData()
+        self.startScanningWithTimer()
         let _ = NSTimer.scheduledTimerWithTimeInterval(30, target: self, selector: "stopScanning", userInfo: nil, repeats: false)
     }
     
+    func startScanningWithTimer() {
+        bleManager.startScanning()
+        scanTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: "restartScanning", userInfo: nil, repeats: false)
+    }
+    
+    func restartScanning() {
+        if scanning {
+            bleManager.stopScanning();
+            startScanningWithTimer();
+        }
+    }
+    
     func stopScanning() {
+        if let _ = self.scanTimer {
+            self.scanTimer.invalidate()
+        }
+        scanning = false
         scanButton!.setTitle("Scan", forState: .Normal)
         scanButton!.enabled = true
         bleManager.stopScanning()
     }
     
     func scanButtonPressed(sender: UIButton!) {
-        startScanningWithTimer()
+        self.startScanning()
     }
     
     func loginButtonPressed(sender: UIButton!) {
@@ -119,9 +142,15 @@ class ListViewController: UITableViewController {
         switch (event)
         {
             case BLEManager.BLEManagerEvent.DeviceUpdated:
-                fallthrough
+                let row = bleManager.indexOfPeripheral(peripheral)
+                let indexPath = NSIndexPath(forRow: row!, inSection:0)
+                self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
+                break;
             case BLEManager.BLEManagerEvent.DeviceDiscovered:
-                self.tableView.reloadData()
+//                self.tableView.reloadData()
+                let row = bleManager.indexOfPeripheral(peripheral)
+                let indexPath = NSIndexPath(forRow: row!, inSection:0)
+                self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
                 break;
             case BLEManager.BLEManagerEvent.DeviceConnected:
                 let row = bleManager.indexOfPeripheral(peripheral)
@@ -156,7 +185,7 @@ class ListViewController: UITableViewController {
             
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             cell.deviceName!.text = peripheral.peripheral!.name
-            cell.deviceRSSI!.text = "RSSI: " + peripheral.rssi.stringValue
+            cell.deviceRSSI!.text = "RSSI: " + (peripheral.rssi.integerValue > 0 ? "?" : peripheral.rssi.stringValue)
             cell.deviceServices!.text = String(peripheral.numberOfServices()) + " Services"
             
             cell.cloudId!.text = peripheral.cloudId as String
