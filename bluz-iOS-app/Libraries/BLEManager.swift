@@ -15,7 +15,7 @@ let BLUZ_CHAR_TX_UUID = "871E0225-38FF-77B1-ED41-9FB3AA142DB2"
 
 public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     private var centralManager: CBCentralManager?
-    public var peripherals = [NSUUID: BLEDeviceInfo]()
+    public var peripherals = [BLEDeviceInfo]()
     var eventCallback: ((BLEManagerEvent, BLEDeviceInfo) -> (Void))?
     var startScanOnPowerup: Bool?
     var discoverOnlyBluz: Bool?
@@ -67,9 +67,11 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     func clearScanResults() {
 //        peripherals.removeAll()
         
-        for (uuid, dev) in peripherals {
+        for dev in peripherals {
             if dev.state != BLEDeviceState.Connected {
-                peripherals.removeValueForKey(uuid)
+                if let index = findPeripheralIndex(dev.peripheral!) {
+                    peripherals.removeAtIndex(index)
+                }
             }
         }
 
@@ -79,18 +81,23 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         return peripherals.count
     }
     
+    func findPeripheralIndex(periperhal: CBPeripheral) -> Int? {
+        var i = 0
+        for dev in peripherals {
+            if dev.peripheral!.identifier == periperhal.identifier {
+                return i
+            }
+            i++
+        }
+        return nil
+    }
+    
     func peripheralAtIndex(index: Int) -> BLEDeviceInfo? {
-        let peripheralIndex = peripherals.startIndex.advancedBy(index)
-        let peripheralKey = peripherals.keys[peripheralIndex]
-        
-        return peripherals[peripheralKey]
+        return peripherals[index]
     }
     
     func indexOfPeripheral(peripheral: BLEDeviceInfo) -> Int? {
-        if let index = peripherals.keys.indexOf((peripheral.peripheral?.identifier)!) {
-            return peripherals.count - index.distanceTo(peripherals.endIndex)
-        }
-        return nil
+        return findPeripheralIndex(peripheral.peripheral!)
     }
     
     //peripheral commands
@@ -106,18 +113,18 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     //delegate methods
     public func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
-        if let _ = peripherals.indexForKey(peripheral.identifier) {
+        if let index = findPeripheralIndex(peripheral) {
             //TO DO: update the objecta advertisiment data and RSSI
-            peripherals[peripheral.identifier]?.advertisementData = advertisementData
-            peripherals[peripheral.identifier]?.rssi = RSSI
-            eventCallback!(BLEManagerEvent.DeviceUpdated, peripherals[peripheral.identifier]!)
+            peripherals[index].advertisementData = advertisementData
+            peripherals[index].rssi = RSSI
+            eventCallback!(BLEManagerEvent.DeviceUpdated, peripherals[index])
         } else {
             let dIno = BLEDeviceInfo(p: peripheral, r: RSSI, a: advertisementData)
             if self.discoverOnlyBluz == true && dIno.isBluzCompatible() {
-                peripherals[peripheral.identifier] = dIno
+                peripherals.append(dIno)
                 eventCallback!(BLEManagerEvent.DeviceDiscovered, dIno)
             } else if self.discoverOnlyBluz == false {
-                peripherals[peripheral.identifier] = dIno
+                peripherals.append(dIno)
                 eventCallback!(BLEManagerEvent.DeviceDiscovered, dIno)
             }
         }
@@ -130,24 +137,24 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     public func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         print("peripheral connected")
-        if let _ = peripherals.indexForKey(peripheral.identifier) {
-            peripherals[peripheral.identifier]?.state = BLEDeviceState.CloudConnecting
-            eventCallback!(BLEManagerEvent.DeviceConnected, peripherals[peripheral.identifier]!)
-            peripherals[peripheral.identifier]?.peripheral?.delegate = self;
-            peripherals[peripheral.identifier]?.peripheral?.discoverServices([CBUUID(string: BLUZ_UUID)])
-            let _ = NSTimer.scheduledTimerWithTimeInterval(22, target: self, selector: "requestId:", userInfo: peripherals[peripheral.identifier], repeats: false)
+        if let index = findPeripheralIndex(peripheral) {
+            peripherals[index].state = BLEDeviceState.CloudConnecting
+            eventCallback!(BLEManagerEvent.DeviceConnected, peripherals[index])
+            peripherals[index].peripheral?.delegate = self;
+            peripherals[index].peripheral?.discoverServices([CBUUID(string: BLUZ_UUID)])
+            let _ = NSTimer.scheduledTimerWithTimeInterval(22, target: self, selector: "requestId:", userInfo: peripherals[index], repeats: false)
         }
     }
     
     
     public func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
         print("peripheral disconnected")
-        if let _ = peripherals.indexForKey(peripheral.identifier) {
-            peripherals[peripheral.identifier]?.state = BLEDeviceState.Disconnected
-            peripherals[peripheral.identifier]?.socket?.disconnect()
-            peripherals[peripheral.identifier]?.lastByteCount = 0
-            peripherals[peripheral.identifier]?.rxBuffer.length = 0
-            eventCallback!(BLEManagerEvent.DeviceDisconnected, peripherals[peripheral.identifier]!)
+        if let index = findPeripheralIndex(peripheral) {
+            peripherals[index].state = BLEDeviceState.Disconnected
+            peripherals[index].socket?.disconnect()
+            peripherals[index].lastByteCount = 0
+            peripherals[index].rxBuffer.length = 0
+            eventCallback!(BLEManagerEvent.DeviceDisconnected, peripherals[index])
         }
     }
     
@@ -200,14 +207,16 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 print("found the right thing")
                 peripheral.setNotifyValue(true, forCharacteristic: characteristic)
             } else if characteristic.UUID == CBUUID(string: BLUZ_CHAR_TX_UUID) {
-                peripherals[peripheral.identifier]?.writeCharacteristic = characteristic
+                if let index = findPeripheralIndex(peripheral) {
+                    peripherals[index].writeCharacteristic = characteristic
+                }
             }
         }
     }
     
     public func peripheral(peripheral: CBPeripheral, didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-        if let _ = peripherals.indexForKey(peripheral.identifier) {
-            peripheral.readValueForCharacteristic(characteristic)
+        if let index = findPeripheralIndex(peripheral) {
+            peripherals[index].peripheral!.readValueForCharacteristic(characteristic)
         }
     }
     
@@ -223,12 +232,12 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             return
         }
         
-        if let _ = peripherals.indexForKey(peripheral.identifier) {
-            let peripheral = peripherals[peripheral.identifier]
+        if let index = findPeripheralIndex(peripheral) {
+            let peripheral = peripherals[index]
             let eosBuffer = NSData(bytes: [0x03, 0x04] as [UInt8], length: 2)
             
             NSLog("Got data from bluz of size " + String(characteristic.value!.length))
-            if peripheral!.state == BLEDeviceState.CloudConnecting && characteristic.value!.isEqualToData(eosBuffer) && peripheral?.lastByteCount > 0 {
+            if peripheral.state == BLEDeviceState.CloudConnecting && characteristic.value!.isEqualToData(eosBuffer) && peripheral.lastByteCount > 0 {
                
                 var bytes = "" as NSMutableString
                 let length = characteristic.value!.length
@@ -240,30 +249,30 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 }
                 NSLog("As we connect, bluz data is: " + String(bytes))
                 
-                peripheral?.socket?.connect()
-                peripheral?.rxBuffer.length = 0
-                peripheral!.state = BLEDeviceState.Connected
-            } else if peripheral!.state == BLEDeviceState.Connected {
+                peripheral.socket?.connect()
+                peripheral.rxBuffer.length = 0
+                peripheral.state = BLEDeviceState.Connected
+            } else if peripheral.state == BLEDeviceState.Connected {
                 if (characteristic.value!.length == 2 && characteristic.value!.isEqualToData(eosBuffer)) {
                     if lastService == 0x01 {
-                        peripheral?.socket?.write( UnsafePointer<UInt8>((peripheral?.rxBuffer.bytes)!), len: (peripheral?.rxBuffer.length)!)
+                        peripheral.socket?.write( UnsafePointer<UInt8>((peripheral.rxBuffer.bytes)), len: (peripheral.rxBuffer.length))
                     } else if lastService == 2 {
-                        let length = peripheral?.rxBuffer.length
+                        let length = peripheral.rxBuffer.length
                         var deviceId = "" as NSMutableString
 
-                        var byteArray = [UInt8](count: length!, repeatedValue: 0x0)
-                        peripheral?.rxBuffer.getBytes(&byteArray, length:length!)
+                        var byteArray = [UInt8](count: length, repeatedValue: 0x0)
+                        peripheral.rxBuffer.getBytes(&byteArray, length:length)
                         
                         for byte in byteArray {
                             deviceId.appendFormat("%02x", byte)
                         }
                         
-                        peripheral?.cloudId = deviceId
-                        getCloudName(peripheral!)
+                        peripheral.cloudId = deviceId
+                        getCloudName(peripheral)
                     }
-                    peripheral?.rxBuffer.length = 0
+                    peripheral.rxBuffer.length = 0
                 } else {
-                    if peripheral?.rxBuffer.length == 0 {
+                    if peripheral.rxBuffer.length == 0 {
                         var array = [UInt8](count: (characteristic.value?.length)!, repeatedValue: 0)
                         characteristic.value!.getBytes(&array, length: (characteristic.value?.length)!)
                         lastService = array.first!
@@ -272,15 +281,15 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         if lastService == 1 {
                             headerBytes = 2
                         }
-                        peripheral?.rxBuffer.appendData(characteristic.value!.subdataWithRange(NSMakeRange(headerBytes, characteristic.value!.length-headerBytes)))
+                        peripheral.rxBuffer.appendData(characteristic.value!.subdataWithRange(NSMakeRange(headerBytes, characteristic.value!.length-headerBytes)))
                     } else {
-                        peripheral?.rxBuffer.appendData(characteristic.value!)
+                        peripheral.rxBuffer.appendData(characteristic.value!)
                     }
                 }
             } else {
                 //this is to catch issues when reconnecting
                 //with beacons, for some reason we are seeing the eos characters sent immediately upon connection, not sure why yet
-                peripheral?.lastByteCount = characteristic.value!.length
+                peripheral.lastByteCount = characteristic.value!.length
 
                 var bytes = "" as NSMutableString
                 let length = characteristic.value!.length

@@ -16,7 +16,6 @@ class ListViewController: UITableViewController {
     var bleManager: BLEManager!
     var scanTimer: NSTimer!
     
-    var numberOfDots = 1;
     var scanning = false;
 
     override func viewDidLoad() {
