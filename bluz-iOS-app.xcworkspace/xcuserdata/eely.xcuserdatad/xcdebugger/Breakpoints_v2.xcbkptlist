@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bluz-iOS-app/Libraries/BLEDeviceInfo.swift"
-            timestampString = "474600558.345429"
+            timestampString = "474832784.316219"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
             landmarkName = "sendParticleData(_:header:)"
             landmarkType = "5">
          </BreakpointContent>

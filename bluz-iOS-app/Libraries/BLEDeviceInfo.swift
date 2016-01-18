@@ -61,7 +61,6 @@ public class BLEDeviceInfo: NSObject {
         if let _ = self.advertisementData.indexForKey("kCBAdvDataServiceUUIDs") {
             let services: NSArray = self.advertisementData["kCBAdvDataServiceUUIDs"] as! NSArray
             for service in services {
-                NSLog("Serivce " + service.description + " for device " + (self.peripheral?.name)!)
                 if service.description == BLUZ_UUID {
                     return true
                 }
