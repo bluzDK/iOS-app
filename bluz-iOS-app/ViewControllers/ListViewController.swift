@@ -20,7 +20,7 @@ class ListViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+            
         scanButton!.addTarget(self, action: "scanButtonPressed:", forControlEvents: .TouchUpInside)
         loginButton!.addTarget(self, action: "loginButtonPressed:", forControlEvents: .TouchUpInside)
         

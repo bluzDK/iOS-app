@@ -6,6 +6,7 @@
 //  Copyright © 2015 Eric Ely. All rights reserved.
 //
 
+import UIKit
 import Foundation
 import CoreBluetooth
 
@@ -19,7 +20,9 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var eventCallback: ((BLEManagerEvent, BLEDeviceInfo) -> (Void))?
     var startScanOnPowerup: Bool?
     var discoverOnlyBluz: Bool?
+    var automaticReconnect: Bool?
     var lastService: UInt8
+    private var taskID: UIBackgroundTaskIdentifier
     
     enum BLEManagerEvent {
         case DeviceDiscovered
@@ -31,14 +34,20 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
 
     override init(){
         lastService = 0
+        taskID = -1
         super.init()
         discoverOnlyBluz = false
         
         let defaults = NSUserDefaults.standardUserDefaults()
-        let val = defaults.objectForKey("discoverOnlyBluz")
+        defaults.synchronize()
+        let ac = defaults.objectForKey("automaticReconnect")
+        let dob = defaults.objectForKey("discoverOnlyBluz")
 
-        if val != nil {
-            discoverOnlyBluz = val as! Bool
+        if dob != nil {
+            discoverOnlyBluz = dob as! Bool
+        }
+        if ac != nil {
+            automaticReconnect = ac as! Bool
         }
         startScanOnPowerup = false
         centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -155,6 +164,9 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             peripherals[index].lastByteCount = 0
             peripherals[index].rxBuffer.length = 0
             eventCallback!(BLEManagerEvent.DeviceDisconnected, peripherals[index])
+            if self.automaticReconnect == true {
+                connectPeripheral(peripherals[index])
+            }
         }
     }
     
@@ -231,6 +243,12 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if characteristic.UUID != CBUUID(string: BLUZ_CHAR_RX_UUID) {
             return
         }
+        
+        if taskID > 0 {
+            self.endBackgroundUpdateTask(taskID);
+        }
+        
+        taskID = self.beginBackgroundUpdateTask();
         
         if let index = findPeripheralIndex(peripheral) {
             let peripheral = peripherals[index]
@@ -322,5 +340,13 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             }
             self.eventCallback!(BLEManagerEvent.DeviceUpdated, peripheral)
         }
+    }
+    
+    func beginBackgroundUpdateTask() -> UIBackgroundTaskIdentifier {
+        return UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({})
+    }
+    
+    func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
+        UIApplication.sharedApplication().endBackgroundTask(taskID)
     }
 }

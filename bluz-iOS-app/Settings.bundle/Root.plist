@@ -10,6 +10,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Automatic Reconnect</string>
+			<key>Key</key>
+			<string>automaticReconnect</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Discover Only Bluz</string>
 			<key>Key</key>
 			<string>discoverOnlyBluz</string>
