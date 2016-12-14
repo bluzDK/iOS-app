@@ -21,8 +21,8 @@ class ListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
             
-        scanButton!.addTarget(self, action: "scanButtonPressed:", forControlEvents: .TouchUpInside)
-        loginButton!.addTarget(self, action: "loginButtonPressed:", forControlEvents: .TouchUpInside)
+        scanButton!.addTarget(self, action: #selector(ListViewController.scanButtonPressed(_:)), forControlEvents: .TouchUpInside)
+        loginButton!.addTarget(self, action: #selector(ListViewController.loginButtonPressed(_:)), forControlEvents: .TouchUpInside)
         
         bleManager = BLEManager()
         bleManager.registerCallback(bleManagerCallback)
@@ -68,12 +68,12 @@ class ListViewController: UITableViewController {
         bleManager.clearScanResults()
         self.tableView.reloadData()
         self.startScanningWithTimer()
-        let _ = NSTimer.scheduledTimerWithTimeInterval(30, target: self, selector: "stopScanning", userInfo: nil, repeats: false)
+        let _ = NSTimer.scheduledTimerWithTimeInterval(30, target: self, selector: #selector(ListViewController.stopScanning), userInfo: nil, repeats: false)
     }
     
     func startScanningWithTimer() {
         bleManager.startScanning()
-        scanTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: "restartScanning", userInfo: nil, repeats: false)
+        scanTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: #selector(ListViewController.restartScanning), userInfo: nil, repeats: false)
     }
     
     func restartScanning() {
@@ -196,7 +196,7 @@ class ListViewController: UITableViewController {
                 cell.connectButton!.enabled = true
                 
                 cell.connectButton!.tag = indexPath.row
-                cell.connectButton!.addTarget(self, action: "connectButtonPressed:", forControlEvents: .TouchUpInside)
+                cell.connectButton!.addTarget(self, action: #selector(ListViewController.connectButtonPressed(_:)), forControlEvents: .TouchUpInside)
                 
                 if (peripheral.state == BLEDeviceState.Connected) {
                     cell.connectButton!.setTitle("Disconnect", forState: .Normal)
@@ -206,7 +206,7 @@ class ListViewController: UITableViewController {
                         cell.claimButton!.tag = indexPath.row
                         cell.claimButton!.enabled = true
                         cell.claimButton!.hidden = false
-                        cell.claimButton!.addTarget(self, action: "claimButtonPressed:", forControlEvents: .TouchUpInside)
+                        cell.claimButton!.addTarget(self, action: #selector(ListViewController.claimButtonPressed(_:)), forControlEvents: .TouchUpInside)
                     }
                     
                 } else {

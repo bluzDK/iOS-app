@@ -14,6 +14,16 @@ let BLUZ_UUID = "871E0223-38FF-77B1-ED41-9FB3AA142DB2"
 let BLUZ_CHAR_RX_UUID = "871E0224-38FF-77B1-ED41-9FB3AA142DB2"
 let BLUZ_CHAR_TX_UUID = "871E0225-38FF-77B1-ED41-9FB3AA142DB2"
 
+
+extension CBCentralManager {
+    internal var centralManagerState: CBCentralManagerState  {
+        get {
+            return CBCentralManagerState(rawValue: state.rawValue) ?? .Unknown
+        }
+    }
+}
+
+
 public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     private var centralManager: CBCentralManager?
     public var peripherals = [BLEDeviceInfo]()
@@ -59,7 +69,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     func startScanning() {
         if let _ = centralManager {
-            if (centralManager!.state == CBCentralManagerState.PoweredOn) {
+            if (centralManager!.centralManagerState == CBCentralManagerState.PoweredOn) {
                 centralManager!.scanForPeripheralsWithServices(nil, options: nil)
             } else {
                 startScanOnPowerup = true
@@ -96,7 +106,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             if dev.peripheral!.identifier == periperhal.identifier {
                 return i
             }
-            i++
+            i += 1
         }
         return nil
     }
@@ -151,7 +161,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             eventCallback!(BLEManagerEvent.DeviceConnected, peripherals[index])
             peripherals[index].peripheral?.delegate = self;
             peripherals[index].peripheral?.discoverServices([CBUUID(string: BLUZ_UUID)])
-            let _ = NSTimer.scheduledTimerWithTimeInterval(22, target: self, selector: "requestId:", userInfo: peripherals[index], repeats: false)
+            let _ = NSTimer.scheduledTimerWithTimeInterval(22, target: self, selector: #selector(BLEManager.requestId(_:)), userInfo: peripherals[index], repeats: false)
         }
     }
     
@@ -171,7 +181,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
     
     public func centralManagerDidUpdateState(central: CBCentralManager) {
-        switch (central.state) {
+        switch (central.centralManagerState) {
             case CBCentralManagerState.PoweredOff:
                 print("Power off")
                 
@@ -257,7 +267,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             NSLog("Got data from bluz of size " + String(characteristic.value!.length))
             if peripheral.state == BLEDeviceState.CloudConnecting && characteristic.value!.isEqualToData(eosBuffer) && peripheral.lastByteCount > 0 {
                
-                var bytes = "" as NSMutableString
+                let bytes = "" as NSMutableString
                 let length = characteristic.value!.length
                 var byteArray = [UInt8](count: length, repeatedValue: 0x0)
                 characteristic.value!.getBytes(&byteArray, length:length)
@@ -276,7 +286,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         peripheral.socket?.write( UnsafePointer<UInt8>((peripheral.rxBuffer.bytes)), len: (peripheral.rxBuffer.length))
                     } else if lastService == 2 {
                         let length = peripheral.rxBuffer.length
-                        var deviceId = "" as NSMutableString
+                        let deviceId = "" as NSMutableString
 
                         var byteArray = [UInt8](count: length, repeatedValue: 0x0)
                         peripheral.rxBuffer.getBytes(&byteArray, length:length)
@@ -309,7 +319,7 @@ public class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 //with beacons, for some reason we are seeing the eos characters sent immediately upon connection, not sure why yet
                 peripheral.lastByteCount = characteristic.value!.length
 
-                var bytes = "" as NSMutableString
+                let bytes = "" as NSMutableString
                 let length = characteristic.value!.length
                 var byteArray = [UInt8](count: length, repeatedValue: 0x0)
                 characteristic.value!.getBytes(&byteArray, length:length)

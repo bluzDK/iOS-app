@@ -21,7 +21,7 @@ class LoginViewController: UIViewController {
         successLabel?.hidden = true
         password?.secureTextEntry = true;
         
-        loginButton!.addTarget(self, action: "loginButtonPressed:", forControlEvents: .TouchUpInside)
+        loginButton!.addTarget(self, action: #selector(LoginViewController.loginButtonPressed(_:)), forControlEvents: .TouchUpInside)
     }
     
     func loginButtonPressed(sender: UIButton!) {

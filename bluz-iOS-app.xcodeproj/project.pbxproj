@@ -233,6 +233,7 @@
 					A4CA94781C022C5900027262 = {
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = QFF482SURQ;
+						LastSwiftMigration = 0810;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -241,6 +242,7 @@
 					};
 					A4CA94901C022C5A00027262 = {
 						CreatedOnToolsVersion = 6.4;
+						LastSwiftMigration = 0810;
 						TestTargetID = A4CA94781C022C5900027262;
 					};
 				};
@@ -483,6 +485,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "banclabs.bluz.iOS-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "bluz-iOS-app/Bridging-Header.h";
+				SWIFT_VERSION = 2.3;
 				USER_HEADER_SEARCH_PATHS = "Pods/**";
 			};
 			name = Debug;
@@ -499,6 +502,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "banclabs.bluz.iOS-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "bluz-iOS-app/Bridging-Header.h";
+				SWIFT_VERSION = 2.3;
 				USER_HEADER_SEARCH_PATHS = "Pods/**";
 			};
 			name = Release;
@@ -518,6 +522,7 @@
 				INFOPLIST_FILE = "bluz-iOS-appTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bluz-iOS-app.app/bluz-iOS-app";
 			};
 			name = Debug;
@@ -533,6 +538,7 @@
 				INFOPLIST_FILE = "bluz-iOS-appTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bluz-iOS-app.app/bluz-iOS-app";
 			};
 			name = Release;

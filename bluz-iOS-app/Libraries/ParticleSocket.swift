@@ -9,7 +9,7 @@
 import Foundation
 
 public class ParticleSocket: NSObject, NSStreamDelegate {
-    let serverAddress: CFString = "device.spark.io"
+    let publicServerAddress: CFString = "device.spark.io"
     let serverPort: UInt32 = 5683
     
     private var inputStream: NSInputStream!
@@ -22,9 +22,20 @@ public class ParticleSocket: NSObject, NSStreamDelegate {
     }
     
     public func connect() {
+        //get the setting for which server to use
+        var server = publicServerAddress
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.synchronize()
+        let s = defaults.objectForKey("stagingServer")
+        if s != nil && s as! Bool == true {
+            server = "staging-device.spark.io"
+        }
+
+        
         var readStream : Unmanaged<CFReadStream>?
         var writeStream : Unmanaged<CFWriteStream>?
-        CFStreamCreatePairWithSocketToHost(nil, self.serverAddress, self.serverPort, &readStream, &writeStream)
+        
+        CFStreamCreatePairWithSocketToHost(nil, server, self.serverPort, &readStream, &writeStream)
         
         inputStream = readStream!.takeUnretainedValue()
         outputStream = writeStream!.takeUnretainedValue()
